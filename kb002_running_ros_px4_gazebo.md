@@ -2,7 +2,7 @@
 
 Начальные условия: склонирован [PX4](https://github.com/PX4/Firmware), установлен ROS Kinetic,
 установлены пакеты ```ros-kinetic-gazebo-ros, ros-kinetic-gazebo-dev, ros-kinetic-gazebo-plugins,
-ros-kinetic-gazebo-ros-pkgs, ros-kinetic-gazebo-ros-msgs```, поставлены все пакеты для сборки PX4 (их список можно подсмотреть в [контейнерах для сборки](https://github.com/PX4/containers/blob/master/docker/px4-dev/Dockerfile_base) и [запуска в симуляторе](https://github.com/PX4/containers/blob/master/docker/px4-dev/Dockerfile_simulation))
+ros-kinetic-gazebo-ros-pkgs, ros-kinetic-gazebo-msgs```, поставлены все пакеты для сборки PX4 (их список можно подсмотреть в [контейнерах для сборки](https://github.com/PX4/containers/blob/master/docker/px4-dev/Dockerfile_base) и [запуска в симуляторе](https://github.com/PX4/containers/blob/master/docker/px4-dev/Dockerfile_simulation))
 
 1. Сборка PX4 и плагинов Gazebo
 
