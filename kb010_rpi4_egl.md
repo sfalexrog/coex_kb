@@ -133,6 +133,8 @@ Extensions: GL_EXT_blend_minmax GL_EXT_multi_draw_arrays GL_EXT_texture_format_B
 
 Пример кода, который позволил мне это всё получить, лежит [в моих гистах](https://gist.github.com/sfalexrog/b0957dc8f6fc0b04e6e724ce4a09e769). Пока что это просто создание EGL-контекста, никаких операций с OpenGL, но это уже прогресс.
 
+Перед запуском надо включить драйвер `GL (Fake KMS)` в `raspi-config`, иначе чуда не произойдёт. Магия происходит в функции `do_gldriver()` и состоит в добавлении `dtoverlay=vc4-fkms-v3d` в секцию `[all]` файла `/boot/config.txt`.
+
 Для успешной сборки нужно линковать библиотеки `libEGL`, `libGLESv2`, `libgbm`. `ldd` на бинарнике выдаёт:
 
 ```bash
