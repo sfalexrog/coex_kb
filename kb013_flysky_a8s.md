@@ -52,10 +52,13 @@
 
     ![twisted cables](assets/kb013_flysky_a8s/013_cable_twist.jpg)
 
-С помощью изготовленного кабеля подключите приёмник к полётному контроллеру:
+С помощью изготовленного кабеля подключите приёмник к полётному контроллеру к порту RC IN:
 
 ![pixracer connection](assets/kb013_flysky_a8s/014_fcu_connection.jpg)
-!TODO!: Иллюстрация подключения к COEX Pix
+![coex pix connection](assets/kb013_flysky_a8s/015_coex_pix_connection.jpg)
+
+> **Hint** Убедитесь, что провод, идущий в COEX Pix, подключен к пину RC IN:
+![coex pix pinout](assets/kb013_flysky_a8s/coex_pix.png)
 
 ## Сопряжение приёмника с пультом
 
@@ -64,7 +67,7 @@
 1. Убедитесь, что полётный контроллер выключен.
 2. Зажмите кнопку **BIND** на приёмнике:
 
-    ![bind key](assets/kb013_flysky_a8s/015_bind_key.jpg)
+    ![bind key](assets/kb013_flysky_a8s/016_bind_key.jpg)
 
 3. Включите полётный контроллер. Светодиод на приёмнике должен заморгать с высокой частотой.
 
@@ -77,14 +80,14 @@
 
 6. Выключите и включите пульт. Светодиод на приёмнике должен перестать мограть.
 
-    ![steady glow](assets/kb013_flysky_a8s/016_steady_glow.jpg)
+    ![steady glow](assets/kb013_flysky_a8s/017_steady_glow.jpg)
 
 ## Выбор режима приёмника
 
 Откройте QGroundControl и подключите полётный контроллер к компьютеру. Откройте вкладку Radio:
 
-![qgc radio pane](assets/kb013_flysky_a8s/017_qgc_radio.png)
+![qgc radio pane](assets/kb013_flysky_a8s/018_qgc_radio.png)
 
 Если справа (под изображением пульта) не показано ни одного канала, зажмите кнопку **BIND** на приёмнике на 2 секунды. Должно появиться 18 каналов:
 
-![qgc radio with channels](assets/kb013_flysky_a8s/018_qgc_channels.png)
+![qgc radio with channels](assets/kb013_flysky_a8s/019_qgc_channels.png)
