@@ -250,7 +250,7 @@ while True:
         # (0, 255, 0) - цвет круга (B=0, G=255, R=0 - зелёный)
         # 3 - толщина линии окружности
         img = cv2.circle(img, (cnt_x, cnt_y), 10, (0, 255, 0), 3)
-        cv2.imshow('image', img)
+    cv2.imshow('image', img)
 
     if cv2.waitKey(13) > 0:
         break
@@ -258,7 +258,69 @@ while True:
 
 ![circle at center](assets/kb014_opencv/006_moments_center.png)
 
-> TODO: Добавить морфологические операции (erode/dilate), интеграцию с ROS
+#### <a id="morphology"></a> Морфологические операции
+
+Изображения, полученные в результате бинаризации, часто могут содержать "шум". Для избавления от него можно использовать можно использовать [морфологические операции](https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BC%D0%BE%D1%80%D1%84%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%8F): эрозию (`cv2.erode()`) и наращивание (`cv2.dilate()`).
+
+> Последовательное применение эрозии и наращивания называется размыканием (opening). Выполнить его можно с помощью операции `cv2.morphologyEx()`, более подробное описание [есть на OpenCV-Python Tutorials](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_morphological_ops/py_morphological_ops.html#opening).
+
+```python
+# -*- coding: utf-8 -*-
+import cv2
+import numpy as np
+
+cap = cv2.VideoCapture(0)
+while True:
+    res, img = cap.read()
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    color_low1 = (0, 100, 100)
+    color_high1 = (15, 255, 255)
+
+    color_low2 = (165, 100, 100)
+    color_high2 = (180, 255, 255)
+
+    img_thresh1 = cv2.inRange(img_hsv, color_low1, color_high1)
+    img_thresh2 = cv2.inRange(img_hsv, color_low2, color_high2)
+    img_thresh = cv2.bitwise_or(img_thresh1, img_thresh2)
+
+    cv2.imshow('img_thresh', img_thresh)
+
+    # Будем избавляться от шума последовательным применением
+    # операций erode и dilate. Для начала составим структурный
+    # элемент этих операций ("ядро", kernel). Размер
+    # структурного элемента влияет на то, насколько большие
+    # области будут удалены.
+    # Мы создадим квадратный структурный элемент размером 5*5
+    # пикселей:
+    kernel = np.ones((5, 5), dtype=np.uint8)
+    # Теперь применим операцию эрозии. Заметим, что шума стало
+    # меньше, но уменьшились и наиденные области.
+    # В качестве параметров передаём бинаризованное изображение
+    # и структурный элемент.
+    img_thresh_eroded = cv2.erode(img_thresh, kernel)
+    cv2.imshow('erode', img_thresh_eroded)
+    # Для "восстановления" наиденных областей воспользуемся
+    # операцией dilate. Здесь, кстати, "проявится" форма
+    # структурного элемента.
+    # В качестве параметров - бинаризованное изображение
+    # и структурный элемент.
+    img_thresh_dilated = cv2.dilate(img_thresh_eroded, kernel)
+    cv2.imshow('dilate', img_thresh_dilated)
+
+    # Дальнейшие операции будем производить уже с "восстановленным"
+    # изображением.
+    moments = cv2.moments(img_thresh_dilated)
+    if moments["m00"] != 0.0:
+        cnt_x = int(moments["m10"] / moments["m00"])
+        cnt_y = int(moments["m01"] / moments["m00"])
+        img = cv2.circle(img, (cnt_x, cnt_y), 10, (0, 255, 0), 3)
+    cv2.imshow('image', img)
+
+    if cv2.waitKey(13) > 0:
+        break
+```
+
+> TODO: Добавить интеграцию с ROS
 
 ## <a id="day2"></a> День 2
 
