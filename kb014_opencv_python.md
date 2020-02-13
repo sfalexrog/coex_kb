@@ -408,4 +408,57 @@ rospy.spin()
 
 ## <a id="day2"></a> День 2
 
-> TODO: Сегодняшний день тоже надо будет описать
+### <a id="practice2"></a> Практика
+
+> По сути, в этот день мы ещё раз повторяли все операции над изображениями и переносили их на дрон. Из любопытного - чёрно-белые изображения (например, такие, которые получаются в результате бинаризации) надо конвертировать с форматом `mono8`.
+
+#### <a id="multipub"></a> Публикация нескольких изображений
+
+Если в OpenCV нам было достаточно вызвать функцию `cv2.imshow()` для того, чтобы у нас появилось новое окно, то в ROS для каждого изображения придётся делать свой publisher. Так, к примеру, если мы хотим публиковать раздельно каналы hue, saturation, value, то наш код получится примерно таким:
+
+```python
+# -*- coding: utf-8 -*-
+import cv2
+import numpy as np
+import rospy
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
+
+rospy.init_node('image_channels')
+bridge = CvBridge()
+
+# Publisher для исходного изображения (просто чтобы понять,
+# работает ли наш код);
+image_pub = rospy.Publisher('~image', Image, queue_size=1)
+# Publisher для канала оттенков
+hue_pub = rospy.Publisher('~hue', Image, queue_size=1)
+# Publisher для канала насыщенности
+saturation_pub = rospy.Publisher('~saturation', Image, queue_size=1)
+# Publisher для канала яркости
+value_pub = rospy.Publisher('~value', Image, queue_size=1)
+
+def image_callback(data):
+    img = bridge.imgmsg_to_cv2(data, 'bgr8')
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    hue = img_hsv[:,:,0]
+    saturation = img_hsv[:,:,1]
+    value = img_hsv[:,:,2]
+
+    image_pub.publish(bridge.cv2_to_imgmsg(img, 'bgr8'))
+    # Для публикации одноцветного изображения указываем вторым параметром 'mono8'
+    hue_pub.publish(bridge.cv2_to_imgmsg(hue, 'mono8'))
+    saturation_pub.publish(bridge.cv2_to_imgmsg(saturation, 'mono8'))
+    value_pub.publish(bridge.cv2_to_imgmsg(value, 'mono8'))
+
+image_sub = rospy.Subscriber('main_camera/image_raw', Image,
+                             image_callback, queue_size=1)
+
+rospy.spin()
+```
+
+Просматривать изображения из этих топиков удобнее всего через `web_video_server`. Он доступен на дроне по адресу [http://192.168.11.1:8080](http://192.168.11.1:8080) (если дрон не переведён в режим клиента):
+
+![web_video_server hsv](assets/kb014_opencv/010_web_video_server.png)
+
+> На приведённой иллюстрации в адресной строке вместо 192.168.11.1 написано localhost - это потому, что я запустил ноды `web_video_server` и `cv_camera` у себя на компьютере, а не на дроне. Это можно сделать, но для этого нужна система на основе GNU/Linux.
