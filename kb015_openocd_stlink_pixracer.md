@@ -152,3 +152,42 @@ shutdown command invoked
 ```
 
 После этого основная часть прошивки возвращается через QGroundControl.
+
+## Постскриптум: DFU
+
+На микроконтроллерах серии STM32F4 (и не только на них) есть специальная, записываемая на заводе прошивка DFU (Device Firmware Upgrade). Её невозможно по-простому стереть/поломать - по этой причине, кстати, говорят, что полётники на F4 "неокирпичиваемые". Запустить эту прошивку можно, если при подаче питания подтянуть пин `BOOT0` на микроконтроллере к 3.3В. На многих "гоночных" полётниках есть специальная кнопка для этого, на Pixracer'ах же надо закоротить две площадки возле выходов на регуляторы:
+
+![dfu boot pins](assets/kb015_openocd_pixracer/pixracer_short.jpg)
+
+На COEX Pix'е эти же контакты расположены немного в другом месте и более заметны:
+
+![coex pix dfu](assets/kb015_openocd_pixracer/coexpix_short.jpg)
+
+При замыкании этих контактов и последующем подключении по USB полётник определится как `STM32  BOOTLOADER` (да, с двумя пробелами). Заливать прошивку в таком режиме можно через `dfu-util`:
+
+```
+$ dfu-util -a 0 -D ./px4fmuv4_bl.bin --dfuse-address 0x08000000
+dfu-util 0.9
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2016 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to http://sourceforge.net/p/dfu-util/tickets/
+
+dfu-util: Invalid DFU suffix signature
+dfu-util: A valid DFU suffix will be required in a future dfu-util release!!!
+Opening DFU capable USB device...
+ID 0483:df11
+Run-time device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 011a
+Device returned transfer size 2048
+DfuSe interface name: "Internal Flash  "
+Downloading to address = 0x08000000, size = 10580
+Download	[=========================] 100%        10580 bytes
+Download done.
+File downloaded successfully
+```
